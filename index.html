@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>鵤工舎・宮大工用語 閃卡</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
+
+  * { box-sizing: border-box; }
+
+  :root {
+    --ink: #232946;
+    --paper: #fffdf6;
+    --paper-dim: #f2ecdd;
+    --amber: #eeb95c;
+    --amber-dark: #c98f2e;
+    --teal: #4f9d78;
+    --muted: #8b8fae;
+  }
+
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--ink);
+    color: var(--paper);
+  }
+  body {
+    font-family: 'Inter', 'Noto Sans TC', sans-serif;
+    padding: 28px 20px 36px;
+  }
+
+  .vl-root { max-width: 880px; margin: 0 auto; }
+
+  .vl-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+  }
+  .vl-header h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 24px;
+    margin: 0;
+    letter-spacing: 0.2px;
+  }
+  .vl-header p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+  .vl-progress-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 999px;
+    height: 6px;
+    width: 100%;
+    overflow: hidden;
+  }
+  .vl-progress-fill {
+    background: linear-gradient(90deg, var(--teal), #7ec89b);
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .vl-layout {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 28px;
+    align-items: start;
+  }
+  @media (max-width: 720px) {
+    .vl-layout { grid-template-columns: 1fr; }
+  }
+
+  .vl-stage { display: flex; flex-direction: column; align-items: center; }
+
+  .vl-deck { position: relative; width: 100%; max-width: 380px; height: 260px; }
+  .vl-stack-layer {
+    position: absolute; inset: 0; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid rgba(35,41,70,0.08);
+  }
+  .vl-stack-layer.l1 { transform: rotate(-4deg) translateY(6px); opacity: 0.6; }
+  .vl-stack-layer.l2 { transform: rotate(3deg) translateY(10px); opacity: 0.4; }
+
+  .vl-flip-container { position: relative; width: 100%; height: 100%; perspective: 1600px; cursor: pointer; }
+  .vl-flip-inner {
+    position: relative; width: 100%; height: 100%;
+    transition: transform 0.55s cubic-bezier(.4,.2,.2,1); transform-style: preserve-3d;
+  }
+  .vl-flip-inner.is-flipped { transform: rotateY(180deg); }
+  .vl-face {
+    position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 14px; background: var(--paper); color: var(--ink);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.28); padding: 22px;
+    display: flex; flex-direction: column;
+  }
+  .vl-face-back { transform: rotateY(180deg); }
+
+  .vl-tab {
+    position: absolute; top: -10px; left: 20px; background: var(--amber); color: var(--ink);
+    font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+
+  .vl-pos-row { padding-top: 4px; }
+  .vl-pos-badge {
+    display: inline-block; background: rgba(79,157,120,0.14); color: var(--teal);
+    font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px;
+    border: 1px solid rgba(79,157,120,0.4);
+  }
+
+  .vl-mastered-dot {
+    position: absolute; top: 14px; right: 16px; width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid rgba(35,41,70,0.25); color: rgba(35,41,70,0.25); font-size: 12px;
+  }
+  .vl-mastered-dot.on { background: var(--teal); border-color: var(--teal); color: white; }
+
+  .vl-face-body {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; gap: 14px; padding: 6px 4px 0;
+  }
+  .vl-word { font-family: 'Fraunces', serif; font-weight: 600; font-size: 28px; line-height: 1.3; word-break: break-word; }
+  .vl-answer { font-size: 16px; line-height: 1.6; color: #3a3f5c; max-width: 30ch; }
+  .vl-hint { font-size: 12px; color: var(--muted); }
+
+  .vl-play-btn {
+    border: none; background: var(--amber); color: var(--ink); width: 40px; height: 40px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.18); font-size: 16px; transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .vl-play-btn:hover { background: var(--amber-dark); transform: scale(1.06); }
+  .vl-play-btn:active { transform: scale(0.94); }
+
+  .vl-example {
+    width: 100%; max-width: 380px; margin-top: 16px;
+    border: 1px dashed rgba(255,255,255,0.22); border-radius: 10px; padding: 12px 14px;
+  }
+  .vl-example-head {
+    font-size: 11px; color: var(--muted); font-weight: 600; margin-bottom: 8px;
+  }
+  .vl-example-body { text-align: left; }
+  .vl-example-sentence {
+    font-family: 'Fraunces', serif; font-size: 15px; line-height: 1.55; color: var(--paper);
+    display: flex; align-items: baseline; gap: 8px;
+  }
+  .vl-example-play {
+    border: none; background: transparent; color: var(--amber); cursor: pointer;
+    display: flex; align-items: center; flex-shrink: 0; padding: 2px; font-size: 13px;
+  }
+  .vl-example-play:hover { color: var(--amber-dark); }
+  .vl-example-translation { font-size: 12.5px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+
+  .vl-controls { margin-top: 20px; display: flex; align-items: center; gap: 10px; }
+  .vl-icon-btn {
+    border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); color: var(--paper);
+    width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 17px; transition: background 0.15s ease;
+  }
+  .vl-icon-btn:hover { background: rgba(255,255,255,0.14); }
+
+  .vl-pill-btn {
+    border: none; background: var(--teal); color: white; font-size: 13px; font-weight: 600;
+    padding: 10px 18px; border-radius: 999px; display: flex; align-items: center; gap: 6px; cursor: pointer;
+    transition: filter 0.15s ease;
+  }
+  .vl-pill-btn.is-off { background: rgba(255,255,255,0.08); color: var(--paper); border: 1px solid rgba(255,255,255,0.2); }
+  .vl-pill-btn:hover { filter: brightness(1.08); }
+
+  .vl-shuffle-btn {
+    border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); color: var(--paper);
+    font-size: 13px; padding: 10px 14px; border-radius: 999px; display: flex; align-items: center; gap: 6px; cursor: pointer;
+  }
+  .vl-shuffle-btn:hover { background: rgba(255,255,255,0.14); }
+
+  .vl-position { margin-top: 14px; font-size: 12px; color: var(--muted); }
+
+  .vl-panel { border: 1px solid rgba(255,255,255,0.14); border-radius: 12px; padding: 18px; }
+  .vl-panel h2 { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; margin: 0 0 4px; }
+  .vl-panel .vl-sub { font-size: 12px; color: var(--muted); margin: 0 0 14px; }
+
+  .vl-field-label { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 8px; display: block; }
+
+  .vl-radio-row { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+  .vl-radio-chip {
+    font-size: 12px; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.2);
+    background: transparent; color: var(--paper); cursor: pointer;
+  }
+  .vl-radio-chip.active { background: var(--amber); color: var(--ink); border-color: var(--amber); font-weight: 600; }
+
+  .vl-toggle-row { display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+  .vl-switch {
+    width: 38px; height: 22px; border-radius: 999px; background: rgba(255,255,255,0.15); position: relative;
+    cursor: pointer; flex-shrink: 0; transition: background 0.2s ease;
+  }
+  .vl-switch.on { background: var(--teal); }
+  .vl-switch-knob {
+    position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%;
+    background: white; transition: left 0.2s ease;
+  }
+  .vl-switch.on .vl-switch-knob { left: 19px; }
+
+  .vl-note {
+    margin-top: 18px; padding-top: 16px; border-top: 1px dashed rgba(255,255,255,0.15);
+    font-size: 11.5px; color: var(--muted); line-height: 1.6;
+  }
+
+  .vl-toast {
+    max-width: 880px; margin: 14px auto 0; background: rgba(79,157,120,0.18);
+    border: 1px solid rgba(79,157,120,0.5); color: #cdeedb; font-size: 12.5px; padding: 8px 14px;
+    border-radius: 8px; text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="vl-root" id="app">
+  <div class="vl-header">
+    <div>
+      <h1>鵤工舎・宮大工用語 閃卡</h1>
+      <p>點擊卡片翻面，按 🔊 聽發音；每張卡都附詞性與例句</p>
+    </div>
+    <div style="min-width:160px;">
+      <div class="vl-progress-track"><div class="vl-progress-fill" id="progressFill"></div></div>
+      <div id="progressLabel" style="font-size:11px;color:var(--muted);margin-top:6px;text-align:right;"></div>
+    </div>
+  </div>
+
+  <div class="vl-layout">
+    <div class="vl-stage">
+      <div class="vl-deck">
+        <div class="vl-stack-layer l2"></div>
+        <div class="vl-stack-layer l1"></div>
+        <div class="vl-flip-container" id="flipContainer" data-action="flip">
+          <div class="vl-flip-inner" id="flipInner">
+            <div class="vl-face" id="faceFront"></div>
+            <div class="vl-face vl-face-back" id="faceBack"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="vl-example" id="exampleBlock"></div>
+
+      <div class="vl-controls">
+        <button class="vl-icon-btn" data-action="prev" aria-label="上一張">‹</button>
+        <button class="vl-shuffle-btn" data-action="shuffle">🔀 打亂</button>
+        <button class="vl-pill-btn is-off" id="masteredBtn" data-action="toggle-mastered">✓ 標記已掌握</button>
+        <button class="vl-icon-btn" data-action="next" aria-label="下一張">›</button>
+      </div>
+      <div class="vl-position" id="positionText"></div>
+    </div>
+
+    <div class="vl-panel">
+      <h2>語音設定</h2>
+      <p class="vl-sub">全部為日文詞彙，可調整朗讀方式</p>
+
+      <span class="vl-field-label">朗讀語言</span>
+      <div class="vl-radio-row" id="langRow">
+        <button class="vl-radio-chip active" data-action="set-lang" data-lang="auto">自動判斷</button>
+        <button class="vl-radio-chip" data-action="set-lang" data-lang="ja">日文</button>
+      </div>
+
+      <div class="vl-toggle-row">
+        <span>翻面時自動朗讀背面</span>
+        <div class="vl-switch on" id="autoSpeakSwitch" data-action="toggle-autospeak"><div class="vl-switch-knob"></div></div>
+      </div>
+
+      <div class="vl-note">此題庫已定版，共 41 張卡片，詞性與例句已預先寫入頁面，任何人打開連結都能直接使用。</div>
+    </div>
+  </div>
+
+  <div class="vl-toast" id="toast" style="display:none;"></div>
+</div>
+
+<script>
+  var DECK = [
+    { front: "親方", back: "師傅（おやかた）", pos: "名詞", sentence: "親方は厳しいが優しい人だ。", translation: "師傅雖然嚴格但很溫柔。" },
+    { front: "ポッと", back: "突然、一下子（ぽっと）", pos: "副詞", sentence: "彼はポッと顔を赤くした。", translation: "他突然臉紅了。" },
+    { front: "鮨", back: "壽司（すし）", pos: "名詞", sentence: "週末に家族で鮨を食べに行った。", translation: "週末和家人一起去吃壽司。" },
+    { front: "～だの～だの", back: "……啦……啦之類", pos: "文法表現", sentence: "暑いだの寒いだの、文句ばかり言う。", translation: "一下說熱、一下說冷，老是在抱怨。" },
+    { front: "連中", back: "夥伴（れんじゅう）", pos: "名詞", sentence: "あの連中はいつも遅刻する。", translation: "那群傢伙總是遲到。" },
+    { front: "昼飯", back: "午飯（ひるめし）", pos: "名詞", sentence: "そろそろ昼飯を食べに行こう。", translation: "差不多該去吃午飯了。" },
+    { front: "自発的に", back: "主動地、自發地（じはつてきに）", pos: "副詞", sentence: "彼は自発的に仕事を手伝った。", translation: "他主動幫忙做事。" },
+    { front: "法隆寺", back: "法隆寺，日本奈良的古寺（ほうりゅうじ）", pos: "專有名詞", sentence: "法隆寺は奈良にある古い寺だ。", translation: "法隆寺是位於奈良的古老寺廟。" },
+    { front: "鬼", back: "鬼；本文隱喻為嚴厲、鬼一般的師傅（おに）", pos: "名詞", sentence: "あの先生はまるで鬼のように厳しい。", translation: "那位老師簡直像鬼一樣嚴厲。" },
+    { front: "教え", back: "教誨（おしえ）", pos: "名詞", sentence: "師匠の教えを一生忘れない。", translation: "一輩子都不會忘記師傅的教誨。" },
+    { front: "舎主", back: "舍主、負責人（しゃしゅ）", pos: "名詞", sentence: "舎主が工房全体をまとめている。", translation: "舍主統籌整個工房。" },
+    { front: "鵤工舎", back: "鵤工舍（いかるがこうしゃ）", pos: "專有名詞", sentence: "彼は鵤工舎で修行を積んだ。", translation: "他在鵤工舍累積了修行經驗。" },
+    { front: "棟梁", back: "棟梁、木工建築的總師傅（とうりょう）", pos: "名詞", sentence: "棟梁の指示に従って作業する。", translation: "按照棟梁的指示進行作業。" },
+    { front: "弟子入りする", back: "拜師、成為弟子（でしいりする）", pos: "動詞", sentence: "十五歳で大工に弟子入りした。", translation: "十五歲時拜木匠為師。" },
+    { front: "手本", back: "榜樣、示範（てほん）", pos: "名詞", sentence: "先輩の仕事ぶりが手本になる。", translation: "前輩的工作態度值得當作榜樣。" },
+    { front: "示す", back: "出示、指教（しめす）", pos: "動詞", sentence: "師匠が正しいやり方を示した。", translation: "師傅示範了正確的做法。" },
+    { front: "カンナ", back: "木工刨刀（かんな）", pos: "名詞", sentence: "カンナで木の表面を滑らかにする。", translation: "用刨刀把木頭表面刨平滑。" },
+    { front: "すーっと", back: "迅速地", pos: "副詞", sentence: "刃がすーっと木に入った。", translation: "刀刃迅速地切入木頭。" },
+    { front: "カンナ屑", back: "刨花、刨屑（かんなくず）", pos: "名詞", sentence: "床にカンナ屑が散らばっている。", translation: "地上散落著刨花。" },
+    { front: "砥ぐ", back: "磨、研磨（刀具）（とぐ）", pos: "動詞", sentence: "毎朝刃物を砥ぐのが日課だ。", translation: "每天早上磨刀具是他的日常。" },
+    { front: "削る", back: "削、刨（けずる）", pos: "動詞", sentence: "鉛筆をナイフで削った。", translation: "用小刀削了鉛筆。" },
+    { front: "～ては～、～ては", back: "動詞て形＋は＋動詞ます形（去ます），表示某個動作反覆進行。", pos: "文法表現", sentence: "書いては消し、書いては消しした。", translation: "寫了又擦，擦了又寫，反覆進行。" },
+    { front: "ですわね", back: "口語、帶有說話者個人語氣，中文意指「對吧」「就是……嘛」。", pos: "文法表現", sentence: "今日はいい天気ですわね。", translation: "今天天氣真好呢。" },
+    { front: "納屋", back: "倉庫、庫房（なや）", pos: "名詞", sentence: "道具は納屋にしまってある。", translation: "工具都收在倉庫裡。" },
+    { front: "上がる", back: "上去、進入室內（あがる）", pos: "動詞", sentence: "どうぞ家に上がってください。", translation: "請進來家裡吧。" },
+    { front: "引きかけ", back: "尚未完成、做到一半（ひきかけ）", pos: "名詞", sentence: "仕事が引きかけのまま帰った。", translation: "工作做到一半就回家了。" },
+    { front: "図面", back: "設計圖、圖紙（ずめん）", pos: "名詞", sentence: "図面を見ながら家を建てる。", translation: "一邊看設計圖一邊蓋房子。" },
+    { front: "道具", back: "工具（どうぐ）", pos: "名詞", sentence: "大工には道具が欠かせない。", translation: "木匠不能沒有工具。" },
+    { front: "一切", back: "一切、完全不（いっさい）", pos: "副詞", sentence: "彼はお金の話を一切しない。", translation: "他完全不談錢的事。" },
+    { front: "目をくれる", back: "留意、看（めをくれる）", pos: "慣用句", sentence: "彼は道具に一切目をくれなかった。", translation: "他完全沒有留意工具。" },
+    { front: "刃物", back: "刀具、刃物（はもの）", pos: "名詞", sentence: "刃物は丁寧に扱うべきだ。", translation: "刀具應該小心對待。" },
+    { front: "抵抗する", back: "抵抗（ていこうする）", pos: "動詞", sentence: "彼は変化に抵抗するタイプだ。", translation: "他是那種會抵抗變化的人。" },
+    { front: "触れる", back: "觸碰、感觸到（ふれる）", pos: "動詞", sentence: "この話題には触れたくない。", translation: "我不想觸碰這個話題。" },
+    { front: "真似をする", back: "模仿（まねをする）", pos: "動詞", sentence: "弟は兄の真似をするのが好きだ。", translation: "弟弟喜歡模仿哥哥。" },
+    { front: "批判", back: "批判（ひはん）", pos: "名詞", sentence: "彼の意見は批判を浴びた。", translation: "他的意見受到了批判。" },
+    { front: "中途半端", back: "半吊子、不徹底（ちゅうとはんぱ）", pos: "な形容詞", sentence: "中途半端な仕事はしたくない。", translation: "我不想做半吊子的工作。" },
+    { front: "往々にして", back: "往往、常常（おうおうにして）", pos: "副詞", sentence: "忙しい時は往々にしてミスが増える。", translation: "忙碌時往往容易出錯。" },
+    { front: "～なくては", back: "轉變成口語的 ～なくちゃ", pos: "文法表現", sentence: "もう帰らなくては。", translation: "差不多該回去了（不回去不行）。" },
+    { front: "危ない", back: "口語唸法為 あぶねえ", pos: "い形容詞", sentence: "そこは危ないから気をつけて。", translation: "那裡很危險，要小心。" },
+    { front: "世の中", back: "社會、世間（よのなか）", pos: "名詞", sentence: "世の中は思ったより厳しい。", translation: "社會比想像中嚴苛。" },
+    { front: "怒り倒す", back: "狠狠地責罵、訓斥到底（おこりたおす）", pos: "動詞", sentence: "師匠に怒り倒された。", translation: "被師傅狠狠地訓斥了一頓。" }
+  ].map(function (c, i) { c.id = i; return c; });
+
+  var state = {
+    order: DECK.map(function (_, i) { return i; }),
+    pos: 0,
+    flipped: false,
+    mastered: {},
+    autoSpeak: true,
+    langMode: "auto"
+  };
+
+  var toastTimer = null;
+
+  function wordScript(text) {
+    return /[\u3040-\u30ff\u31f0-\u31ff\u3400-\u9fff]/.test(text) ? "ja" : "en";
+  }
+  function detectLang(text, mode) {
+    if (mode === "en") return "en-US";
+    if (mode === "ja") return "ja-JP";
+    return wordScript(text) === "ja" ? "ja-JP" : "en-US";
+  }
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, function (s) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s];
+    });
+  }
+  function current() { return DECK[state.order[state.pos]]; }
+
+  function speak(text, forceLang) {
+    if (!("speechSynthesis" in window) || !text) return;
+    window.speechSynthesis.cancel();
+    var utter = new SpeechSynthesisUtterance(text);
+    utter.lang = forceLang || detectLang(text, state.langMode);
+    utter.rate = 0.92;
+    window.speechSynthesis.speak(utter);
+  }
+
+  function renderFront() {
+    var card = current();
+    var isMastered = !!state.mastered[card.id];
+    document.getElementById("faceFront").innerHTML =
+      '<div class="vl-tab">#' + (state.pos + 1) + '</div>' +
+      '<div class="vl-mastered-dot ' + (isMastered ? "on" : "") + '">' + (isMastered ? "✓" : "") + '</div>' +
+      '<div class="vl-face-body">' +
+        '<div class="vl-word">' + escapeHtml(card.front) + '</div>' +
+        '<div class="vl-hint">點擊卡片查看解答</div>' +
+      '</div>' +
+      '<div style="display:flex;justify-content:center;">' +
+        '<button class="vl-play-btn" data-action="play-front" aria-label="播放正面發音">🔊</button>' +
+      '</div>';
+  }
+
+  function renderBack() {
+    var card = current();
+    var isMastered = !!state.mastered[card.id];
+    document.getElementById("faceBack").innerHTML =
+      '<div class="vl-mastered-dot ' + (isMastered ? "on" : "") + '">' + (isMastered ? "✓" : "") + '</div>' +
+      '<div class="vl-pos-row"><span class="vl-pos-badge">' + escapeHtml(card.pos) + '</span></div>' +
+      '<div class="vl-face-body">' +
+        '<div class="vl-answer">' + escapeHtml(card.back) + '</div>' +
+      '</div>' +
+      '<div style="display:flex;justify-content:center;">' +
+        '<button class="vl-play-btn" data-action="play-back" aria-label="播放背面發音">🔊</button>' +
+      '</div>';
+  }
+
+  function renderExample() {
+    var card = current();
+    document.getElementById("exampleBlock").innerHTML =
+      '<div class="vl-example-head">JLPT N2 例句</div>' +
+      '<div class="vl-example-body">' +
+        '<div class="vl-example-sentence">' + escapeHtml(card.sentence) +
+          '<button class="vl-example-play" data-action="play-example" aria-label="播放例句發音">🔊</button>' +
+        '</div>' +
+        '<div class="vl-example-translation">' + escapeHtml(card.translation) + '</div>' +
+      '</div>';
+  }
+
+  function renderControls() {
+    var card = current();
+    var isMastered = !!state.mastered[card.id];
+    var btn = document.getElementById("masteredBtn");
+    btn.className = "vl-pill-btn" + (isMastered ? "" : " is-off");
+    btn.innerHTML = "✓ " + (isMastered ? "已掌握" : "標記已掌握");
+    document.getElementById("positionText").textContent = "第 " + (state.pos + 1) + " / " + state.order.length + " 張";
+  }
+
+  function renderProgress() {
+    var masteredCount = Object.values(state.mastered).filter(Boolean).length;
+    var total = DECK.length;
+    var pct = total ? Math.round((masteredCount / total) * 100) : 0;
+    document.getElementById("progressFill").style.width = pct + "%";
+    document.getElementById("progressLabel").textContent = "已掌握 " + masteredCount + " / " + total;
+  }
+
+  function applyFlipClass() {
+    document.getElementById("flipInner").className = "vl-flip-inner" + (state.flipped ? " is-flipped" : "");
+  }
+
+  function renderAll() {
+    renderFront();
+    renderBack();
+    renderExample();
+    renderControls();
+    renderProgress();
+    applyFlipClass();
+  }
+
+  function flipCard() {
+    state.flipped = !state.flipped;
+    applyFlipClass();
+    if (state.flipped && state.autoSpeak) {
+      var card = current();
+      setTimeout(function () { if (state.flipped) speak(card.back); }, 320);
+    }
+  }
+
+  function goTo(nextPos) {
+    window.speechSynthesis.cancel();
+    state.flipped = false;
+    state.pos = ((nextPos % state.order.length) + state.order.length) % state.order.length;
+    renderAll();
+  }
+
+  function shuffleDeck() {
+    var arr = DECK.map(function (c) { return c.id; });
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+    window.speechSynthesis.cancel();
+    state.order = arr;
+    state.pos = 0;
+    state.flipped = false;
+    renderAll();
+    showToast("已重新打亂順序");
+  }
+
+  function toggleMastered() {
+    var card = current();
+    state.mastered[card.id] = !state.mastered[card.id];
+    renderControls();
+    renderFront();
+    renderBack();
+    renderProgress();
+  }
+
+  function setLangMode(mode) {
+    state.langMode = mode;
+    document.querySelectorAll("#langRow .vl-radio-chip").forEach(function (el) {
+      el.classList.toggle("active", el.getAttribute("data-lang") === mode);
+    });
+  }
+
+  function toggleAutoSpeak() {
+    state.autoSpeak = !state.autoSpeak;
+    document.getElementById("autoSpeakSwitch").classList.toggle("on", state.autoSpeak);
+  }
+
+  function showToast(msg) {
+    var el = document.getElementById("toast");
+    el.textContent = msg;
+    el.style.display = "block";
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.style.display = "none"; }, 2200);
+  }
+
+  function playExample() {
+    var card = current();
+    speak(card.sentence, "ja-JP");
+  }
+
+  function handleClick(e) {
+    var btn = e.target.closest("[data-action]");
+    if (!btn) return;
+    var action = btn.getAttribute("data-action");
+    if (action === "flip") flipCard();
+    else if (action === "play-front") speak(current().front);
+    else if (action === "play-back") speak(current().back);
+    else if (action === "play-example") playExample();
+    else if (action === "prev") goTo(state.pos - 1);
+    else if (action === "next") goTo(state.pos + 1);
+    else if (action === "shuffle") shuffleDeck();
+    else if (action === "toggle-mastered") toggleMastered();
+    else if (action === "set-lang") setLangMode(btn.getAttribute("data-lang"));
+    else if (action === "toggle-autospeak") toggleAutoSpeak();
+  }
+
+  function boot() {
+    document.getElementById("app").addEventListener("click", handleClick);
+    renderAll();
+  }
+
+  document.addEventListener("DOMContentLoaded", boot);
+</script>
+</body>
+</html>
